@@ -5,7 +5,7 @@ import math
 pygame.init()
 
 # 設置顯示
-width, height = 800, 600
+width, height = 320, 240
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("3D Maze Game")
 
@@ -16,13 +16,14 @@ GRAY = (100, 100, 100)
 
 # 迷宮設置
 maze = [
-    [1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1],
-    [1, 0, 1, 1, 0, 1],
-    [1, 0, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 1, 1, 0, 1, 0, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 1, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]
+
 tile_size = 50
 
 # 玩家設置
@@ -30,6 +31,7 @@ player_x, player_y = 75, 75
 player_angle = 0
 player_speed = 2
 mouse_sensitivity = 0.005
+fov = 60  # 初始FOV
 
 # 射線投射函數
 def cast_ray(px, py, angle):
@@ -45,7 +47,7 @@ def cast_ray(px, py, angle):
 # 繪製3D視圖
 def draw_3d_view():
     for col in range(width):
-        angle = player_angle + math.radians(col / width * 60 - 30)
+        angle = player_angle + math.radians(col / width * fov - fov / 2)
         depth, x, y = cast_ray(player_x, player_y, angle)
         if depth:
             wall_height = 5000 / (depth + 0.0001)
@@ -72,6 +74,13 @@ while running:
             running = False
 
     keys = pygame.key.get_pressed()
+    
+    # FOV 調整
+    if keys[pygame.K_q]:
+        fov += 1  # 增加FOV
+    if keys[pygame.K_e]:
+        fov -= 1  # 減少FOV
+    fov = max(30, min(120, fov))  # 限制FOV在30到120度之間
     
     # 計算新的位置
     new_x, new_y = player_x, player_y
@@ -104,3 +113,6 @@ while running:
     clock.tick(60)
 
 pygame.quit()
+
+
+
